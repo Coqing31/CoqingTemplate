@@ -1,0 +1,8 @@
+# Testing config.yml
+testing:
+  free: false
+  price: 10
+  currency: usd
+
+hey: hello
+shut: the fuck up
