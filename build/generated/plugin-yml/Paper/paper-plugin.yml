@@ -6,9 +6,3 @@ loader: com.coqing.coqingtemplate.load.LibraryLoader
 description: A plugin template for Coqing's plugins.
 authors:
   - Coqing
-dependencies:
-  server:
-    CoqingUtils:
-      load: BEFORE
-      required: true
-      join-classpath: true

@@ -1,4 +1,3 @@
-import net.minecrell.pluginyml.paper.PaperPluginDescription
 plugins {
 	id("java")
 	id("de.eldoria.plugin-yml.paper") version "0.7.1"
@@ -14,7 +13,7 @@ description = "A plugin template for Coqing's plugins."
 
 repositories {
     mavenCentral()
-    maven("REDACTED")
+    maven("https://maven.coqing.de/releases")
 }
 
 // When specifying dependencies, make sure to follow these rules:
@@ -23,11 +22,19 @@ repositories {
 // - If you want to include a plugin API, use compileOnly().
 dependencies {
     paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
-    compileOnly("com.coqing:coqingutils:1.0.0") 
+    paperLibrary("com.coqing:coqingutils:1.0.0")
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
 }
 
 tasks.build {
     dependsOn("shadowJar")
+}
+
+tasks.shadowJar {
+    mergeServiceFiles()
+    minimize() // Comment this out if any issues arise
+    archiveClassifier = ""
 }
 
 // Configuring paper-plugin.yml
@@ -41,13 +48,7 @@ paper {
     generateLibrariesJson = true
     
     serverDependencies {
-        // This plugin is REQUIRED!!!!!
-        register("CoqingUtils") {
-            required = true
-            joinClasspath = true
-            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-        }
-        // Specify other dependencies here...
+        // Insert server dependencies here...
     }
 }
 
