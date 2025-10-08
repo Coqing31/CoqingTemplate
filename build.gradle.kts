@@ -8,7 +8,7 @@ plugins {
 // TODO: Change the information in here to the information you need.
 // The name is located in settings.gradle.kts.
 group = "com.coqing.coqingtemplate"
-version = "1.0.0"
+version = "1.1.0"
 description = "A plugin template for Coqing's plugins."
 
 repositories {
@@ -22,7 +22,7 @@ repositories {
 // - If you want to include a plugin API, use compileOnly().
 dependencies {
     paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
-    paperLibrary("com.coqing:coqingutils:1.0.0")
+    paperLibrary("com.coqing:coqingutils:1.1.0")
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
 }

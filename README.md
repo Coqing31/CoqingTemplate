@@ -43,7 +43,8 @@ The paperweight-userdev Gradle plugin part of that provides access
 to internal code (also known as NMS) during development.
 
 This template includes paperweight, which allows you to use internal NMS code.
-Keep in mind that
+Keep in mind that NMS code may change at any time during updates, so keep
+an eye out so that other users won't complain their plugin breaks on an update 😉
 
 ## Utils Library
 
