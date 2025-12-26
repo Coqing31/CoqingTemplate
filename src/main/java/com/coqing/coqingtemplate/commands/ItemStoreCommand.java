@@ -14,15 +14,11 @@ import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @SuppressWarnings("UnstableApiUsage")
 public class ItemStoreCommand implements PluginCommand {
@@ -48,7 +44,6 @@ public class ItemStoreCommand implements PluginCommand {
                 .requires(req ->
                         req.getExecutor() instanceof Player &&
                                 req.getExecutor().hasPermission("coqingtemplate.itemstore"))
-                .then(Commands.literal("benchmark").executes(this::executeBenchmark))
                 .then(Commands.literal("add")
                         .then(Commands.argument("id", StringArgumentType.string()).executes(this::executeAdd))
                 )
@@ -58,70 +53,6 @@ public class ItemStoreCommand implements PluginCommand {
                 .then(Commands.literal("get")
                         .then(Commands.argument("id", isArg).executes(this::executeGet))
                 );
-    }
-
-    private int executeReload(CommandContext<CommandSourceStack> ctx) {
-        Player sender = (Player) command.getExecutorOrSender(ctx);
-
-        return 1;
-    }
-
-    private int executeBenchmark(CommandContext<CommandSourceStack> ctx) {
-        Player sender = (Player) command.getExecutorOrSender(ctx);
-
-        try {
-            // Many entries
-            cmp.sendMessage(sender, "<prefix> <yellow>Adding 10,000 entries...</yellow>");
-            long start = System.nanoTime();
-            RandomUtils random = RandomUtils.secure();
-            ItemStack item = new ItemStack(Material.DIAMOND);
-            for (int i = 0; i < 10_000; i++) {
-                String key = "bench_" + i;
-                this.itemStore.set(key, item);
-            }
-            cmp.sendMessage(sender, "<prefix> <green>Took <ms>ms to add 10,000 entries.</green>",
-                    Placeholder.unparsed("ms", String.format("%.3f", (double) (System.nanoTime()-start)/1_000_000)));
-
-            // Random read
-            cmp.sendMessage(sender, "<prefix> <yellow>Performing 1,000 reads...</yellow>");
-            start = System.nanoTime();
-            for (int i = 0; i < 1000; i++) {
-                int key = random.randomInt(0, 1000);
-                ItemStoreItem value = this.itemStore.get("bench_"+key);
-                if (value == null)
-                    cmp.sendMessage(sender, "<prefix> <gold>Unable to find key <key>.</gold>",
-                            Placeholder.unparsed("key", "bench_"+key));
-            }
-            cmp.sendMessage(sender, "<prefix> <green>Took <ms>ms to read 1,000 entries.</green>",
-                    Placeholder.unparsed("ms", String.format("%.3f", (double) (System.nanoTime()-start)/1_000_000)));
-
-            // Deletion
-            cmp.sendMessage(sender, "<prefix> <yellow>Deleting all entries...</yellow>");
-            start = System.nanoTime();
-            for (int i = 0; i < 10_000; i++)
-                this.itemStore.remove("bench_"+i);
-            cmp.sendMessage(sender, "<prefix> <green>Took <ms>ms to remove 10,000 entries.</green>",
-                    Placeholder.unparsed("ms", String.format("%.3f", (double) (System.nanoTime()-start)/1_000_000)));
-
-            // Compact
-            cmp.sendMessage(sender, "<prefix> <yellow>Reclaiming file space (current file size: <size>)</yellow>",
-                    Placeholder.unparsed("size", String.valueOf(this.itemStore.size())));
-            start = System.nanoTime();
-            this.itemStore.compact();
-            cmp.sendMessage(sender, "<prefix> <green>Took <ms>ms to reclaim file space. Current file size: " +
-                            "<size></green>",
-                    Placeholder.unparsed("ms", String.format("%.3f", (double) (System.nanoTime()-start)/1_000_000)),
-                    Placeholder.unparsed("size", String.valueOf(this.itemStore.size())));
-
-            cmp.sendMessage(sender, "<prefix> <green>Benchmark is now complete!</green>");
-        } catch (Exception ex) {
-            cmp.sendMessage(sender, "<prefix> <red>An error occurred while running the benchmark. Go to the " +
-                    "console for more info.</red>");
-            this.plugin.getSLF4JLogger().error("An error occurred while running the benchmark:", ex);
-            return 0;
-        }
-
-        return 1;
     }
 
     private int executeAdd(CommandContext<CommandSourceStack> ctx) {
